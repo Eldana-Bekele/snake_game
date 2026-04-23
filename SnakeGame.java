@@ -203,55 +203,89 @@ public class SnakeGame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             // Background
-            g.setColor(Color.DARK_GRAY);
-            g.fillRect(0, 0, getWidth(), getHeight());
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
 
-            // Grid lines
-            g.setColor(Color.GRAY);
+            // Grid lines (optional, make subtle)
+            g2d.setColor(new Color(50, 50, 50));
             for(int i=0; i<=GRID_WIDTH; i++) {
-                g.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, getHeight());
+                g2d.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, getHeight());
             }
             for(int i=0; i<=GRID_HEIGHT; i++) {
-                g.drawLine(0, i*CELL_SIZE, getWidth(), i*CELL_SIZE);
+                g2d.drawLine(0, i*CELL_SIZE, getWidth(), i*CELL_SIZE);
             }
 
             // Snake
-            g.setColor(Color.GREEN);
-            for(Point p : snake) {
-                g.fillRect(p.x * CELL_SIZE, p.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            for(int i = 0; i < snake.size(); i++) {
+                Point p = snake.get(i);
+                if(i == snake.size() - 1) {
+                    // Head
+                    g2d.setColor(Color.GREEN);
+                } else {
+                    // Body
+                    g2d.setColor(new Color(0, 150, 0));
+                }
+                g2d.fillRoundRect(p.x * CELL_SIZE + 2, p.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4, 10, 10);
             }
 
-            // Food
-            g.setColor(Color.RED);
-            g.fillRect(food.x * CELL_SIZE, food.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            // AI Snake (if exists)
+            if(aiSnake != null) {
+                g2d.setColor(Color.BLUE);
+                for(Point p : aiSnake) {
+                    g2d.fillRoundRect(p.x * CELL_SIZE + 2, p.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4, 10, 10);
+                }
+            }
+
+            // Food (Apple)
+            g2d.setColor(Color.RED);
+            g2d.fillOval(food.x * CELL_SIZE + 2, food.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+            g2d.setColor(new Color(139, 69, 19)); // Brown stem
+            g2d.fillRect(food.x * CELL_SIZE + CELL_SIZE/2 - 2, food.y * CELL_SIZE, 4, 6);
 
             // Score
-            g.setColor(Color.WHITE);
-            g.drawString("Score: " + score + " Foods: " + foodEaten + " Level: " + level, 10, 20);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("SansSerif", Font.BOLD, 16));
+            g2d.drawString("Score: " + score + " | Foods: " + foodEaten + " | Level: " + level, 10, 25);
 
             // Level Up Message
             if(levelUpMessage != null) {
-                g.setColor(Color.YELLOW);
-                g.setFont(new Font("Arial", Font.BOLD, 20));
-                FontMetrics fm = g.getFontMetrics();
+                g2d.setColor(Color.YELLOW);
+                g2d.setFont(new Font("SansSerif", Font.BOLD, 48));
+                FontMetrics fm = g2d.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(levelUpMessage)) / 2;
-                int y = getHeight() / 2 - 50;
-                g.drawString(levelUpMessage, x, y);
+                int y = getHeight() / 2;
+                // Shadow for effect
+                g2d.setColor(Color.BLACK);
+                g2d.drawString(levelUpMessage, x + 2, y + 2);
+                g2d.setColor(Color.YELLOW);
+                g2d.drawString(levelUpMessage, x, y);
             }
 
             // Game Over
             if(gameOver) {
-                g.setColor(Color.RED);
-                FontMetrics fm = g.getFontMetrics();
-                String msg1 = "Game Over! Score: " + score;
-                String msg2 = "Press R to restart";
+                g2d.setColor(Color.RED);
+                g2d.setFont(new Font("SansSerif", Font.BOLD, 48));
+                FontMetrics fm = g2d.getFontMetrics();
+                String msg1 = "Game Over!";
+                String msg2 = "Score: " + score;
+                String msg3 = "Press R to Restart";
                 int x1 = (getWidth() - fm.stringWidth(msg1)) / 2;
                 int x2 = (getWidth() - fm.stringWidth(msg2)) / 2;
-                int y = getHeight() / 2;
-                g.drawString(msg1, x1, y);
-                g.drawString(msg2, x2, y + 20);
+                int x3 = (getWidth() - fm.stringWidth(msg3)) / 2;
+                int y = getHeight() / 2 - 50;
+                // Shadow
+                g2d.setColor(Color.BLACK);
+                g2d.drawString(msg1, x1 + 2, y + 2);
+                g2d.drawString(msg2, x2 + 2, y + 52);
+                g2d.drawString(msg3, x3 + 2, y + 102);
+                g2d.setColor(Color.RED);
+                g2d.drawString(msg1, x1, y);
+                g2d.drawString(msg2, x2, y + 50);
+                g2d.drawString(msg3, x3, y + 100);
             }
         }
     }
