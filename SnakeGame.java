@@ -35,6 +35,18 @@ public class SnakeGame {
         private Timer levelUpTimer;
         private int moveCounter = 0;
         private java.util.List<Point> aiSnake;
+        private enum PowerUpType { FREEZE, PORTAL }
+        private static class PowerUp {
+            Point position;
+            PowerUpType type;
+            PowerUp(Point p, PowerUpType t) {
+                position = p;
+                type = t;
+            }
+        }
+        private java.util.List<PowerUp> powerUps = new java.util.ArrayList<>();
+        private boolean freezeActive = false;
+        private Timer freezeTimer;
 
         public GamePanel() {
             snake = new java.util.ArrayList<>();
@@ -80,6 +92,15 @@ public class SnakeGame {
             } while (snake.contains(food) || (aiSnake != null && aiSnake.contains(food)));
         }
 
+        private void spawnPowerUp() {
+            PowerUpType type = Math.random() < 0.5 ? PowerUpType.FREEZE : PowerUpType.PORTAL;
+            Point p;
+            do {
+                p = new Point((int)(Math.random() * GRID_WIDTH), (int)(Math.random() * GRID_HEIGHT));
+            } while (snake.contains(p) || (aiSnake != null && aiSnake.contains(p)) || p.equals(food) || powerUps.stream().anyMatch(pu -> pu.position.equals(p)));
+            powerUps.add(new PowerUp(p, type));
+        }
+
         private void move() {
             if(gameOver) return;
             Point head = snake.get(snake.size() - 1);
@@ -89,6 +110,17 @@ public class SnakeGame {
                 case DOWN: newHead.y++; break;
                 case LEFT: newHead.x--; break;
                 case RIGHT: newHead.x++; break;
+            }
+
+            // Check for power-ups
+            boolean atePowerUp = false;
+            for(PowerUp pu : new java.util.ArrayList<>(powerUps)) {
+                if(newHead.equals(pu.position)) {
+                    applyPowerUp(pu, newHead);
+                    powerUps.remove(pu);
+                    score++;
+                    atePowerUp = true;
+                }
             }
 
             // Check collision
@@ -123,6 +155,7 @@ public class SnakeGame {
                     levelUpTimer.start();
                 }
                 spawnFood();
+                if(level >= 5 && Math.random() < 0.2) spawnPowerUp();
             } else {
                 snake.remove(0);
             }
@@ -160,11 +193,28 @@ public class SnakeGame {
         }
 
         private void moveFood() {
+            if(freezeActive) return;
             Point newFood;
             do {
                 newFood = new Point((int)(Math.random() * GRID_WIDTH), (int)(Math.random() * GRID_HEIGHT));
             } while (snake.contains(newFood) || (aiSnake != null && aiSnake.contains(newFood)) || newFood.equals(food));
             food = newFood;
+        }
+
+        private void applyPowerUp(PowerUp pu, Point newHead) {
+            if(pu.type == PowerUpType.FREEZE) {
+                freezeActive = true;
+                if(freezeTimer != null) freezeTimer.stop();
+                freezeTimer = new Timer(5000, e -> {
+                    freezeActive = false;
+                });
+                freezeTimer.setRepeats(false);
+                freezeTimer.start();
+            } else if(pu.type == PowerUpType.PORTAL) {
+                // Teleport snake head to food position
+                newHead.setLocation(food.x, food.y);
+                spawnFood();
+            }
         }
 
         private void gameOver() {
@@ -188,6 +238,12 @@ public class SnakeGame {
                 levelUpTimer.stop();
                 levelUpTimer = null;
             }
+            if(freezeTimer != null) {
+                freezeTimer.stop();
+                freezeTimer = null;
+            }
+            freezeActive = false;
+            powerUps.clear();
             if(aiSnake != null) aiSnake.clear();
             if(level >= 10) {
                 aiSnake = new java.util.ArrayList<>();
@@ -246,10 +302,31 @@ public class SnakeGame {
             g2d.setColor(new Color(139, 69, 19)); // Brown stem
             g2d.fillRect(food.x * CELL_SIZE + CELL_SIZE/2 - 2, food.y * CELL_SIZE, 4, 6);
 
+            // Power-ups
+            for(PowerUp pu : powerUps) {
+                if(pu.type == PowerUpType.FREEZE) {
+                    g2d.setColor(Color.CYAN);
+                    g2d.fillOval(pu.position.x * CELL_SIZE, pu.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    g2d.setColor(Color.BLUE);
+                    g2d.fillOval(pu.position.x * CELL_SIZE + 3, pu.position.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
+                } else {
+                    g2d.setColor(Color.ORANGE);
+                    g2d.fillOval(pu.position.x * CELL_SIZE, pu.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    g2d.setColor(Color.YELLOW);
+                    g2d.fillOval(pu.position.x * CELL_SIZE + 3, pu.position.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
+                }
+            }
+
             // Score
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("SansSerif", Font.BOLD, 16));
             g2d.drawString("Score: " + score + " | Foods: " + foodEaten + " | Level: " + level, 10, 25);
+
+            if(level >= 5) {
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
+                g2d.drawString("Legend: Blue = Freeze Apple | Gold = Portal to Apple", 10, 45);
+            }
 
             // Level Up Message
             if(levelUpMessage != null) {
