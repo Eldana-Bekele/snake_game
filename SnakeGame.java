@@ -235,14 +235,11 @@ public class SnakeGame {
                 freezeTimer.setRepeats(false);
                 freezeTimer.start();
             } else if(pu.type == PowerUpType.PORTAL) {
-                // Teleport snake head to food position
-                newHead.setLocation(food.x, food.y);
-                spawnFood();
-                // Freeze the new apple for 5 seconds
+                // Freeze the apple in place for the user to reach
                 freezeActive = true;
                 snowflakes.clear();
                 if(freezeTimer != null) freezeTimer.stop();
-                freezeTimer = new Timer(5000, e -> {
+                freezeTimer = new Timer(30000, e -> {
                     freezeActive = false;
                     snowflakes.clear();
                 });
@@ -375,7 +372,7 @@ public class SnakeGame {
             if(level >= 5) {
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                g2d.drawString("Legend: Blue = Freeze Apple | Gold = Portal to Apple", 10, 45);
+                g2d.drawString("Legend: Blue = Freeze Apple 10s | Gold = Freeze Apple 30s", 10, 45);
             }
 
             // Level Up Message
