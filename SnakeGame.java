@@ -94,10 +94,13 @@ public class SnakeGame {
 
         private void spawnPowerUp() {
             PowerUpType type = Math.random() < 0.5 ? PowerUpType.FREEZE : PowerUpType.PORTAL;
-            Point p;
-            do {
+            Point p = null;
+            boolean valid = false;
+            while (!valid) {
                 p = new Point((int)(Math.random() * GRID_WIDTH), (int)(Math.random() * GRID_HEIGHT));
-            } while (snake.contains(p) || (aiSnake != null && aiSnake.contains(p)) || p.equals(food) || powerUps.stream().anyMatch(pu -> pu.position.equals(p)));
+                final Point temp = p;
+                valid = !snake.contains(p) && (aiSnake == null || !aiSnake.contains(p)) && !p.equals(food) && !powerUps.stream().anyMatch(pu -> pu.position.equals(temp));
+            }
             powerUps.add(new PowerUp(p, type));
         }
 
@@ -113,13 +116,11 @@ public class SnakeGame {
             }
 
             // Check for power-ups
-            boolean atePowerUp = false;
             for(PowerUp pu : new java.util.ArrayList<>(powerUps)) {
                 if(newHead.equals(pu.position)) {
                     applyPowerUp(pu, newHead);
                     powerUps.remove(pu);
                     score++;
-                    atePowerUp = true;
                 }
             }
 
