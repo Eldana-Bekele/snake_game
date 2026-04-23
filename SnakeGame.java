@@ -47,6 +47,7 @@ public class SnakeGame {
         private java.util.List<PowerUp> powerUps = new java.util.ArrayList<>();
         private boolean freezeActive = false;
         private Timer freezeTimer;
+        private java.util.List<Point> snowflakes = new java.util.ArrayList<>();
 
         public GamePanel() {
             snake = new java.util.ArrayList<>();
@@ -134,6 +135,12 @@ public class SnakeGame {
             if(newHead.equals(food)) {
                 score++;
                 foodEaten++;
+                freezeActive = false;
+                snowflakes.clear();
+                if(freezeTimer != null) {
+                    freezeTimer.stop();
+                    freezeTimer = null;
+                }
                 if(foodEaten >= 3) {
                     foodEaten = 0;
                     level++;
@@ -206,9 +213,15 @@ public class SnakeGame {
         private void applyPowerUp(PowerUp pu, Point newHead) {
             if(pu.type == PowerUpType.FREEZE) {
                 freezeActive = true;
+                snowflakes.clear();
+                for(int i = 0; i < 50; i++) {
+                    snowflakes.add(new Point((int)(Math.random() * getWidth()), (int)(Math.random() * getHeight())));
+                }
                 if(freezeTimer != null) freezeTimer.stop();
-                freezeTimer = new Timer(5000, e -> {
+                freezeTimer = new Timer(10000, e -> {
                     freezeActive = false;
+                    snowflakes.clear();
+                    repaint();
                 });
                 freezeTimer.setRepeats(false);
                 freezeTimer.start();
@@ -218,9 +231,11 @@ public class SnakeGame {
                 spawnFood();
                 // Freeze the new apple for 5 seconds
                 freezeActive = true;
+                snowflakes.clear();
                 if(freezeTimer != null) freezeTimer.stop();
                 freezeTimer = new Timer(5000, e -> {
                     freezeActive = false;
+                    snowflakes.clear();
                 });
                 freezeTimer.setRepeats(false);
                 freezeTimer.start();
@@ -253,6 +268,7 @@ public class SnakeGame {
                 freezeTimer = null;
             }
             freezeActive = false;
+            snowflakes.clear();
             powerUps.clear();
             if(aiSnake != null) aiSnake.clear();
             if(level >= 10) {
@@ -275,6 +291,12 @@ public class SnakeGame {
             // Background
             g2d.setColor(Color.BLACK);
             g2d.fillRect(0, 0, getWidth(), getHeight());
+
+            // Freeze effect - blue tint
+            if(freezeActive) {
+                g2d.setColor(new Color(0, 100, 200, 80));
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
 
             // Grid lines (optional, make subtle)
             g2d.setColor(new Color(50, 50, 50));
@@ -324,6 +346,14 @@ public class SnakeGame {
                     g2d.fillOval(pu.position.x * CELL_SIZE, pu.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                     g2d.setColor(Color.YELLOW);
                     g2d.fillOval(pu.position.x * CELL_SIZE + 3, pu.position.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
+                }
+            }
+
+            // Snowflakes effect when frozen
+            if(freezeActive) {
+                g2d.setColor(Color.WHITE);
+                for(Point snowflake : snowflakes) {
+                    g2d.fillOval(snowflake.x, snowflake.y, 4, 4);
                 }
             }
 
