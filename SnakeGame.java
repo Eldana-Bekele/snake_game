@@ -46,7 +46,9 @@ public class SnakeGame {
         }
         private java.util.List<PowerUp> powerUps = new java.util.ArrayList<>();
         private boolean freezeActive = false;
+        private PowerUpType activePowerUpType = null;
         private Timer freezeTimer;
+        private long freezeEndTime = 0;
         private java.util.List<Point> snowflakes = new java.util.ArrayList<>();
         private Timer powerUpTimer;
 
@@ -145,6 +147,8 @@ public class SnakeGame {
                 score++;
                 foodEaten++;
                 freezeActive = false;
+                activePowerUpType = null;
+                freezeEndTime = 0;
                 snowflakes.clear();
                 if(freezeTimer != null) {
                     freezeTimer.stop();
@@ -222,26 +226,33 @@ public class SnakeGame {
         private void applyPowerUp(PowerUp pu, Point newHead) {
             if(pu.type == PowerUpType.FREEZE) {
                 freezeActive = true;
+                activePowerUpType = PowerUpType.FREEZE;
                 snowflakes.clear();
                 for(int i = 0; i < 50; i++) {
                     snowflakes.add(new Point((int)(Math.random() * getWidth()), (int)(Math.random() * getHeight())));
                 }
+                freezeEndTime = System.currentTimeMillis() + 10000;
                 if(freezeTimer != null) freezeTimer.stop();
                 freezeTimer = new Timer(10000, e -> {
                     freezeActive = false;
+                    activePowerUpType = null;
                     snowflakes.clear();
                     repaint();
                 });
                 freezeTimer.setRepeats(false);
                 freezeTimer.start();
             } else if(pu.type == PowerUpType.PORTAL) {
-                // Freeze the apple in place for the user to reach
+                // Teleport snake head to food position
+                newHead.setLocation(food.x, food.y);
+                spawnFood();
+                // Freeze the apple in place for 10 seconds
                 freezeActive = true;
-                snowflakes.clear();
+                activePowerUpType = PowerUpType.PORTAL;
+                freezeEndTime = System.currentTimeMillis() + 10000;
                 if(freezeTimer != null) freezeTimer.stop();
-                freezeTimer = new Timer(30000, e -> {
+                freezeTimer = new Timer(10000, e -> {
                     freezeActive = false;
-                    snowflakes.clear();
+                    activePowerUpType = null;
                 });
                 freezeTimer.setRepeats(false);
                 freezeTimer.start();
@@ -275,6 +286,8 @@ public class SnakeGame {
                 freezeTimer = null;
             }
             freezeActive = false;
+            activePowerUpType = null;
+            freezeEndTime = 0;
             snowflakes.clear();
             powerUps.clear();
             if(aiSnake != null) aiSnake.clear();
@@ -299,9 +312,13 @@ public class SnakeGame {
             g2d.setColor(Color.BLACK);
             g2d.fillRect(0, 0, getWidth(), getHeight());
 
-            // Freeze effect - blue tint
+            // Freeze effect - colored tint based on power-up type
             if(freezeActive) {
-                g2d.setColor(new Color(0, 100, 200, 80));
+                if(activePowerUpType == PowerUpType.FREEZE) {
+                    g2d.setColor(new Color(0, 100, 200, 80));
+                } else if(activePowerUpType == PowerUpType.PORTAL) {
+                    g2d.setColor(new Color(200, 150, 0, 100));
+                }
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
 
@@ -372,7 +389,21 @@ public class SnakeGame {
             if(level >= 5) {
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                g2d.drawString("Legend: Blue = Freeze Apple 10s | Gold = Freeze Apple 30s", 10, 45);
+                g2d.drawString("Legend: Blue = Freeze Apple 10s | Gold = Freeze Apple 10s", 10, 45);
+            }
+
+            // Freeze countdown timer
+            if(freezeActive && freezeEndTime > 0) {
+                long timeRemaining = (freezeEndTime - System.currentTimeMillis()) / 1000 + 1;
+                if(timeRemaining < 0) timeRemaining = 0;
+                
+                if(activePowerUpType == PowerUpType.FREEZE) {
+                    g2d.setColor(Color.CYAN);
+                } else {
+                    g2d.setColor(Color.YELLOW);
+                }
+                g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
+                g2d.drawString("Freeze: " + timeRemaining + "s", getWidth() - 180, 40);
             }
 
             // Level Up Message
