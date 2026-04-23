@@ -157,7 +157,7 @@ public class SnakeGame {
                     levelUpTimer.start();
                 }
                 spawnFood();
-                if(level >= 5 && Math.random() < 0.2) spawnPowerUp();
+                if(level >= 5) spawnPowerUp();
             } else {
                 snake.remove(0);
             }
