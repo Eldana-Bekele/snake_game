@@ -215,6 +215,14 @@ public class SnakeGame {
                 // Teleport snake head to food position
                 newHead.setLocation(food.x, food.y);
                 spawnFood();
+                // Freeze the new apple for 5 seconds
+                freezeActive = true;
+                if(freezeTimer != null) freezeTimer.stop();
+                freezeTimer = new Timer(5000, e -> {
+                    freezeActive = false;
+                });
+                freezeTimer.setRepeats(false);
+                freezeTimer.start();
             }
         }
 
