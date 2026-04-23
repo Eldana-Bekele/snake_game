@@ -145,7 +145,8 @@ public class SnakeGame {
                     }
                     if(level == 5) {
                         speed = 150;
-                    } else {
+                        spawnPowerUp();
+                    } else if(level > 5) {
                         speed = Math.max(50, speed - 20);
                     }
                     timer.setDelay(speed);
