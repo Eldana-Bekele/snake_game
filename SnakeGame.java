@@ -51,6 +51,9 @@ public class SnakeGame {
         private long freezeEndTime = 0;
         private java.util.List<Point> snowflakes = new java.util.ArrayList<>();
         private Timer powerUpTimer;
+        private boolean gameStarted = false;
+        private int startCountdown = 3;
+        private Timer countdownTimer;
 
         public GamePanel() {
             snake = new java.util.ArrayList<>();
@@ -91,11 +94,26 @@ public class SnakeGame {
             
             // Power-up spawning timer - spawns continuously at level 5+
             powerUpTimer = new Timer(3000, e -> {
-                if(level >= 5 && !gameOver) {
+                if(level >= 5 && !gameOver && gameStarted) {
                     spawnPowerUp();
                 }
             });
             powerUpTimer.start();
+            
+            startCountdown = 3;
+            gameStarted = false;
+            countdownTimer = new Timer(1000, e -> {
+                startCountdown--;
+                repaint();
+                if(startCountdown <= 0) {
+                    gameStarted = true;
+                    countdownTimer.stop();
+                    countdownTimer = null;
+                    repaint();
+                }
+            });
+            countdownTimer.setRepeats(true);
+            countdownTimer.start();
         }
 
         private void spawnFood() {
@@ -116,7 +134,7 @@ public class SnakeGame {
         }
 
         private void move() {
-            if(gameOver) return;
+            if(gameOver || !gameStarted) return;
             Point head = snake.get(snake.size() - 1);
             Point newHead = new Point(head.x, head.y);
             switch(direction) {
@@ -269,9 +287,15 @@ public class SnakeGame {
                 freezeTimer.stop();
                 freezeTimer = null;
             }
+            if(countdownTimer != null) {
+                countdownTimer.stop();
+                countdownTimer = null;
+            }
             freezeActive = false;
             activePowerUpType = null;
             freezeEndTime = 0;
+            startCountdown = 3;
+            gameStarted = false;
             snowflakes.clear();
             powerUps.clear();
             if(aiSnake != null) aiSnake.clear();
@@ -283,6 +307,18 @@ public class SnakeGame {
             }
             spawnFood();
             timer.start();
+            countdownTimer = new Timer(1000, e -> {
+                startCountdown--;
+                repaint();
+                if(startCountdown <= 0) {
+                    gameStarted = true;
+                    countdownTimer.stop();
+                    countdownTimer = null;
+                    repaint();
+                }
+            });
+            countdownTimer.setRepeats(true);
+            countdownTimer.start();
             repaint();
         }
 
