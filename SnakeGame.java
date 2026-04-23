@@ -35,7 +35,7 @@ public class SnakeGame {
         private Timer levelUpTimer;
         private int moveCounter = 0;
         private java.util.List<Point> aiSnake;
-        private enum PowerUpType { FREEZE, PORTAL }
+        private enum PowerUpType { FREEZE }
         private static class PowerUp {
             Point position;
             PowerUpType type;
@@ -105,7 +105,6 @@ public class SnakeGame {
         }
 
         private void spawnPowerUp() {
-            PowerUpType type = Math.random() < 0.5 ? PowerUpType.FREEZE : PowerUpType.PORTAL;
             Point p = null;
             boolean valid = false;
             while (!valid) {
@@ -113,7 +112,7 @@ public class SnakeGame {
                 final Point temp = p;
                 valid = !snake.contains(p) && (aiSnake == null || !aiSnake.contains(p)) && !p.equals(food) && !powerUps.stream().anyMatch(pu -> pu.position.equals(temp));
             }
-            powerUps.add(new PowerUp(p, type));
+            powerUps.add(new PowerUp(p, PowerUpType.FREEZE));
         }
 
         private void move() {
@@ -241,21 +240,6 @@ public class SnakeGame {
                 });
                 freezeTimer.setRepeats(false);
                 freezeTimer.start();
-            } else if(pu.type == PowerUpType.PORTAL) {
-                // Teleport snake head to food position
-                newHead.setLocation(food.x, food.y);
-                spawnFood();
-                // Freeze the apple in place for 10 seconds
-                freezeActive = true;
-                activePowerUpType = PowerUpType.PORTAL;
-                freezeEndTime = System.currentTimeMillis() + 10000;
-                if(freezeTimer != null) freezeTimer.stop();
-                freezeTimer = new Timer(10000, e -> {
-                    freezeActive = false;
-                    activePowerUpType = null;
-                });
-                freezeTimer.setRepeats(false);
-                freezeTimer.start();
             }
         }
 
@@ -314,11 +298,7 @@ public class SnakeGame {
 
             // Freeze effect - colored tint based on power-up type
             if(freezeActive) {
-                if(activePowerUpType == PowerUpType.FREEZE) {
-                    g2d.setColor(new Color(0, 100, 200, 80));
-                } else if(activePowerUpType == PowerUpType.PORTAL) {
-                    g2d.setColor(new Color(200, 150, 0, 100));
-                }
+                g2d.setColor(new Color(0, 100, 200, 80));
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
 
@@ -361,16 +341,11 @@ public class SnakeGame {
             // Power-ups
             for(PowerUp pu : powerUps) {
                 if(pu.type == PowerUpType.FREEZE) {
-                    g2d.setColor(Color.CYAN);
-                    g2d.fillOval(pu.position.x * CELL_SIZE, pu.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    g2d.setColor(Color.BLUE);
-                    g2d.fillOval(pu.position.x * CELL_SIZE + 3, pu.position.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
-                } else {
-                    g2d.setColor(Color.ORANGE);
-                    g2d.fillOval(pu.position.x * CELL_SIZE, pu.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    g2d.setColor(Color.YELLOW);
-                    g2d.fillOval(pu.position.x * CELL_SIZE + 3, pu.position.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
-                }
+                g2d.setColor(Color.CYAN);
+                g2d.fillOval(pu.position.x * CELL_SIZE, pu.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                g2d.setColor(Color.BLUE);
+                g2d.fillOval(pu.position.x * CELL_SIZE + 3, pu.position.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
+            }
             }
 
             // Snowflakes effect when frozen
@@ -389,7 +364,7 @@ public class SnakeGame {
             if(level >= 5) {
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                g2d.drawString("Legend: Blue = Freeze Apple 10s | Gold = Freeze Apple 10s", 10, 45);
+                g2d.drawString("Legend: Blue = Freeze Apple 10s", 10, 45);
             }
 
             // Freeze countdown timer
