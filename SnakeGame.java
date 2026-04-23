@@ -49,7 +49,6 @@ public class SnakeGame {
         private Timer freezeTimer;
         private java.util.List<Point> snowflakes = new java.util.ArrayList<>();
         private Timer powerUpTimer;
-        private Timer powerUpTimer;
 
         public GamePanel() {
             snake = new java.util.ArrayList<>();
@@ -87,14 +86,6 @@ public class SnakeGame {
 
             timer = new Timer(150, e -> move());
             timer.start();
-            
-            // Power-up spawning timer - spawns continuously at level 5+
-            powerUpTimer = new Timer(3000, e -> {
-                if(level >= 5 && !gameOver) {
-                    spawnPowerUp();
-                }
-            });
-            powerUpTimer.start();
             
             // Power-up spawning timer - spawns continuously at level 5+
             powerUpTimer = new Timer(3000, e -> {
