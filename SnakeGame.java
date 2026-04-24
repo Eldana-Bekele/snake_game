@@ -92,9 +92,9 @@ public class SnakeGame {
             timer = new Timer(150, e -> move());
             timer.start();
             
-            // Power-up spawning timer - spawns continuously at level 12+
+            // Power-up spawning timer - spawns continuously at levels 5-9 and 12+
             powerUpTimer = new Timer(3000, e -> {
-                if(level >= 12 && !gameOver && gameStarted) {
+                if(((level >= 5 && level <= 9) || level >= 12) && !gameOver && gameStarted) {
                     spawnPowerUp();
                 }
             });
@@ -198,7 +198,7 @@ public class SnakeGame {
                     levelUpTimer.start();
                 }
                 spawnFood();
-                if(level >= 12) spawnPowerUp();
+                if((level >= 5 && level <= 9) || level >= 12) spawnPowerUp();
             } else {
                 snake.remove(0);
             }
