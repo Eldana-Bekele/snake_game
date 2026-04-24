@@ -32,3 +32,5 @@ PROMPT: the freeze orb should be showing from levels 5 to 9 by level 10 and beyo
     ---The AI produced what i wanted, with the orb from levels 5 to 9, and 10 having normal speed with the second snake and moving apple and 12 having the orbs back with increased speed, and the legend displaying 5 seconds. 
 
 I also told the AI to make the game aesthetically pleasing and detailed with nicely styled fonts and displays, it did exactly what i wanted it to!
+
+I had some issues with my vs code terminal, and had to deal with pushing errors becuase i had a different account on vs code, and couldn't push, which did surprise me, but it was very minor and easy fix!
