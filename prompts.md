@@ -27,7 +27,7 @@ PROMPT to fix: display the 3 second countdown to start a game
 PROMPT: make the freeze 5 seconds instead of 10
     -- i thought that the freeze time for the apple being 10 seconds was too much and the AI successfully reduced it to 5, however the legend i had in the top corner still displayed 10 seconds, i also chose to expand more on the levels. 
 
-PROMPT prompt to fix: the freeze orb should be showing from levels 5 to 9 by level 10 and beyond, i want the snake to return to its normal speed, but compete with another snake on eating the apple. as the user progresses from that level, the speed increases slightly, by level 12 allow the freeze orb to pop up here and there, to freeze the apple for 5 seconds, but the other snake still moves. Also, make sure to change the legend to say 5 seconds 
+PROMPT to fix: the freeze orb should be showing from levels 5 to 9 by level 10 and beyond, i want the snake to return to its normal speed, but compete with another snake on eating the apple. as the user progresses from that level, the speed increases slightly, by level 12 allow the freeze orb to pop up here and there, to freeze the apple for 5 seconds, but the other snake still moves. Also, make sure to change the legend to say 5 seconds 
 
     ---The AI produced what i wanted, with the orb from levels 5 to 9, and 10 having normal speed with the second snake and moving apple and 12 having the orbs back with increased speed, and the legend displaying 5 seconds. 
 
