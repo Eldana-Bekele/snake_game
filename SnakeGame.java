@@ -451,6 +451,19 @@ public class SnakeGame {
                 g2d.drawString("Freeze: " + timeRemaining + "s", getWidth() - 190, 38);
             }
 
+            // Countdown to start
+            if(!gameStarted && startCountdown > 0) {
+                g2d.setFont(new Font("SansSerif", Font.BOLD, 80));
+                FontMetrics fm = g2d.getFontMetrics();
+                String countdownText = String.valueOf(startCountdown);
+                int x = (getWidth() - fm.stringWidth(countdownText)) / 2;
+                int y = (getHeight() - fm.getAscent()) / 2 + fm.getAscent();
+                g2d.setColor(new Color(0, 0, 0, 200));
+                g2d.drawString(countdownText, x + 4, y + 4);
+                g2d.setColor(new Color(100, 255, 100));
+                g2d.drawString(countdownText, x, y);
+            }
+
             // Level Up Message
             if(levelUpMessage != null) {
                 g2d.setFont(new Font("SansSerif", Font.BOLD, 48));
