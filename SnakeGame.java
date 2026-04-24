@@ -92,9 +92,9 @@ public class SnakeGame {
             timer = new Timer(150, e -> move());
             timer.start();
             
-            // Power-up spawning timer - spawns continuously at level 5+
+            // Power-up spawning timer - spawns continuously at level 12+
             powerUpTimer = new Timer(3000, e -> {
-                if(level >= 5 && !gameOver && gameStarted) {
+                if(level >= 12 && !gameOver && gameStarted) {
                     spawnPowerUp();
                 }
             });
@@ -179,11 +179,15 @@ public class SnakeGame {
                         aiSnake.add(new Point(1,1));
                         aiSnake.add(new Point(2,1));
                         aiSnake.add(new Point(3,1));
-                    }
-                    if(level == 5) {
+                        speed = 150;
+                    } else if(level > 10 && level < 12) {
+                        speed = Math.max(100, speed - 5);
+                    } else if(level >= 12) {
+                        speed = Math.max(80, speed - 5);
+                    } else if(level == 5) {
                         speed = 150;
                         spawnPowerUp();
-                    } else if(level > 5) {
+                    } else if(level > 5 && level < 10) {
                         speed = Math.max(50, speed - 20);
                     }
                     timer.setDelay(speed);
@@ -194,7 +198,7 @@ public class SnakeGame {
                     levelUpTimer.start();
                 }
                 spawnFood();
-                if(level >= 5) spawnPowerUp();
+                if(level >= 12) spawnPowerUp();
             } else {
                 snake.remove(0);
             }
@@ -436,10 +440,10 @@ public class SnakeGame {
             g2d.setFont(new Font("SansSerif", Font.BOLD, 16));
             g2d.drawString("Score: " + score + "   Foods: " + foodEaten + "   Level: " + level, 18, 29);
 
-            if(level >= 5) {
+            if(level >= 12) {
                 g2d.setColor(new Color(220, 240, 255, 230));
                 g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                g2d.drawString("Legend: Blue orb = Freeze apple 10s", 18, 45);
+                g2d.drawString("Legend: Blue orb = Freeze apple 5s", 18, 45);
             }
 
             // Freeze countdown timer
