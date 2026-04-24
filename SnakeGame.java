@@ -440,11 +440,10 @@ public class SnakeGame {
             g2d.setFont(new Font("SansSerif", Font.BOLD, 16));
             g2d.drawString("Score: " + score + "   Foods: " + foodEaten + "   Level: " + level, 18, 29);
 
-            if(level >= 12) {
-                g2d.setColor(new Color(220, 240, 255, 230));
-                g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                g2d.drawString("Legend: Blue orb = Freeze apple 5s", 18, 45);
-            }
+            // Legend
+            g2d.setColor(new Color(220, 240, 255, 230));
+            g2d.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            g2d.drawString("Legend: Blue orb = Freeze apple 5s", 18, 45);
 
             // Freeze countdown timer
             if(freezeActive && freezeEndTime > 0) {
