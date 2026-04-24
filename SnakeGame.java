@@ -248,9 +248,9 @@ public class SnakeGame {
                 for(int i = 0; i < 50; i++) {
                     snowflakes.add(new Point((int)(Math.random() * getWidth()), (int)(Math.random() * getHeight())));
                 }
-                freezeEndTime = System.currentTimeMillis() + 10000;
+                freezeEndTime = System.currentTimeMillis() + 5000;
                 if(freezeTimer != null) freezeTimer.stop();
-                freezeTimer = new Timer(10000, e -> {
+                freezeTimer = new Timer(5000, e -> {
                     freezeActive = false;
                     activePowerUpType = null;
                     snowflakes.clear();
