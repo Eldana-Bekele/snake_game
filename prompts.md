@@ -30,3 +30,5 @@ PROMPT: make the freeze 5 seconds instead of 10
 PROMPT: the freeze orb should be showing from levels 5 to 9 by level 10 and beyond, i want the snake to return to its normal speed, but compete with another snake on eating the apple. as the user progresses from that level, the speed increases slightly, by level 12 allow the freeze orb to pop up here and there, to freeze the apple for 5 seconds, but the other snake still moves. Also, make sure to change the legend to say 5 seconds 
 
     ---The AI produced what i wanted, with the orb from levels 5 to 9, and 10 having normal speed with the second snake and moving apple and 12 having the orbs back with increased speed, and the legend displaying 5 seconds. 
+
+I also told the AI to make the game aesthetically pleasing and detailed with nicely styled fonts and displayes, it did exactly what i wanted it to!
